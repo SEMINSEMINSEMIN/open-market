@@ -9,8 +9,6 @@ branches:
     prefix: etc/
   - label: feat
     prefix: feat/
-  - label: help wanted
-    prefix: help/
   - label: markup
     prefix: markup/
   - label: refactor
