@@ -10,7 +10,6 @@ export default class Loading extends HTMLElement {
 
         const wrapper = document.createElement("div");
         wrapper.setAttribute("id", "floatingCirclesG");
-        wrapper.setAttribute("class", "hidden");
 
         for (let i = 1; i <= 8; i++) {
             const circle = document.createElement("div");
