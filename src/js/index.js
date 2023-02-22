@@ -1,3 +1,12 @@
+import Loading from "./components/Loading.js";
+import { $ } from "./utils/querySelector.js";
+import "../css/index.css";
+
+customElements.define("loading-indicator", Loading);
+const $modal = $("#modal");
+const $loadingIndicator = document.createElement("loading-indicator");
+$modal.appendChild($loadingIndicator);
+
 const modules = {};
 
 const load = async (file) => {
@@ -57,13 +66,13 @@ const router = async () => {
         const view = match.route.view;
 
         if (!modules[view]) {
-            // $loading.style.cssText = "display: block";
+            $loadingIndicator.classList.remove("hidden");
             await load(view);
         }
 
         const viewRender = new modules[view].default(getParams(match));
         viewRender.test();
-        // if ($loading.style.display === "block") $loading.style.cssText = "display: none";
+        $loadingIndicator.classList.add("hidden");
     }
 };
 
