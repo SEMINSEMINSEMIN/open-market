@@ -10,6 +10,7 @@ module.exports = (env) => {
             app: "./src/js/index.js",
         },
         output: {
+            publicPath: "/",
             filename: devMode ? "[name].js" : "[name].[contenthash].js",
             path: path.resolve(__dirname, "dist"),
             clean: true,
@@ -63,7 +64,9 @@ module.exports = (env) => {
     };
     if (devMode) {
         const devServer = {
-            static: "./dist",
+            static: {
+                directory: path.resolve(__dirname, "dist"),
+            },
             client: {
                 overlay: true,
             },
