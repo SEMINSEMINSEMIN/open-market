@@ -1,13 +1,14 @@
 import AbstractView from "./AbstractView.js";
+import Topbar from "../components/Topbar.js";
 import { $ } from "../utils/querySelector.js";
-import test from "../../assets/test.jpeg";
 
 export default class Home extends AbstractView {
-    test() {
-        const $app = $("#app");
-        $app.textContent = "Home";
-        const testImg = new Image();
-        testImg.src = test;
-        $app.appendChild(testImg);
+    constructor() {
+        super();
+        this.$header = $(".topbar", $("#app"));
+    }
+
+    render() {
+        new Topbar(this.$header);
     }
 }

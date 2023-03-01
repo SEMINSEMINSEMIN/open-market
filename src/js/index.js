@@ -30,6 +30,7 @@ const getParams = (match) => {
 };
 
 const navigateTo = (url) => {
+    url = url || "/";
     history.pushState(null, "", url);
     router();
 };
@@ -71,7 +72,7 @@ const router = async () => {
         }
 
         const viewRender = new modules[view].default(getParams(match));
-        viewRender.test();
+        viewRender.render();
         $loadingIndicator.classList.add("hidden");
     }
 };
