@@ -1,0 +1,80 @@
+.footer {
+    padding: 60px calc(320 / 1920 * 100%) 63px;
+    font-size: 1.4rem;
+    background-color: #F2F2F2;
+}
+
+.footer .top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 22px; 
+    border-bottom: 1px solid #C4C4C4;
+}
+
+.footer .top .links-left {
+    display: flex;
+    align-items: center;
+    line-height: 1.8rem;
+}
+
+.footer .top .links-left li:not(:last-of-type)::after {
+    content: "|";
+    margin: 0 14px;
+}
+
+.footer .top .links-left li a:hover {
+    font-weight: 700;
+}
+
+.footer .top .links-right {
+    display: flex;
+    gap: 14px;
+}
+
+.footer .top .links-right li {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.footer .top .links-right li a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.footer .top .links-right .insta {
+    background: url(../../assets/sprite.png) no-repeat -229px 0;
+    background-size: calc(859 / 32 * 100%);
+}
+
+.footer .top .links-right .facebook {
+    background: url(../../assets/sprite.png) no-repeat -137px 0;
+    background-size: calc(859 / 32 * 100%);
+}
+
+.footer .top .links-right .youtube {
+    background: url(../../assets/sprite.png) no-repeat -617px 0;
+    background-size: calc(859 / 32 * 100%);
+}
+
+.footer .bottom {
+    margin-top: 30px;
+    line-height: 2.4rem;
+    color: var(--mild-gray);
+}
+
+.footer .bottom * {
+    color: inherit;
+}
+
+.footer .bottom .company-name {
+    font-weight: 700;
+}
+
+@media screen and (max-width: 1280px) {
+    .footer {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
