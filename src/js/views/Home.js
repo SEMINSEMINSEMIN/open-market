@@ -1,13 +1,22 @@
 import AbstractView from "./AbstractView.js";
+import Topbar from "../components/Topbar.js";
+import ProductList from "../components/ProductList.js";
+import Footer from "../components/Footer.js";
+
 import { $ } from "../utils/querySelector.js";
-import test from "../../assets/test.jpeg";
 
 export default class Home extends AbstractView {
-    test() {
-        const $app = $("#app");
-        $app.textContent = "Home";
-        const testImg = new Image();
-        testImg.src = test;
-        $app.appendChild(testImg);
+    constructor() {
+        super();
+        this.$app = $("#app");
+        this.$header = $(".topbar", this.$app);
+        this.$footer = $(".footer", this.$app);
+        this.$main = $(".main", this.$app);
+    }
+
+    render() {
+        new Topbar(this.$header);
+        new Footer(this.$footer);
+        new ProductList(this.$main);
     }
 }

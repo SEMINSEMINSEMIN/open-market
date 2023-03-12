@@ -1,0 +1,43 @@
+.main .product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 380px);
+    justify-content: center;
+    row-gap: 78px;
+    column-gap: 70px;
+    padding: 60px 0 159px;
+}
+
+.main .product-list .product a {
+    display: block;
+}
+
+.main .product-list .product a img {
+    display: block;
+    object-fit: cover;
+    margin-bottom: 16px;
+    border: 1px solid #C4C4C4;
+    border-radius: 10px;
+}
+
+.main .product-list .product a .store-name {
+    line-height: 2.2rem;
+    color: var(--mild-gray);
+}
+
+.main .product-list .product a h2 {
+    margin: 10px 0;
+    font-size: 1.8rem;
+    line-height: 2.2rem;
+}
+
+.main .product-list .product a .price {
+    display: flex;
+    align-items: center;
+}
+
+.main .product-list .product a .price span {
+    margin-right: 2px;
+    font-weight: 700;
+    font-size: 2.4rem;
+    line-height: 3rem;
+}
