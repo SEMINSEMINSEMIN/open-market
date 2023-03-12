@@ -10,13 +10,13 @@ export default class Home extends AbstractView {
         super();
         this.$app = $("#app");
         this.$header = $(".topbar", this.$app);
-        this.$main = $(".main", this.$app);
         this.$footer = $(".footer", this.$app);
+        this.$main = $(".main", this.$app);
     }
 
     render() {
         new Topbar(this.$header);
-        new ProductList(this.$main);
         new Footer(this.$footer);
+        new ProductList(this.$main);
     }
 }

@@ -1,5 +1,8 @@
 .footer {
-    padding: 60px calc(320 / 1920 * 100%) 63px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 13px calc(320 / 1920 * 100%) 8px;
     font-size: 1.4rem;
     background-color: #F2F2F2;
 }
@@ -7,14 +10,20 @@
 .footer .top {
     display: flex;
     justify-content: space-between;
-    padding-bottom: 22px; 
+    padding-bottom: 13px; 
     border-bottom: 1px solid #C4C4C4;
 }
 
 .footer .top .links-left {
     display: flex;
+    flex-wrap: wrap;
+    min-width: 500px;
     align-items: center;
     line-height: 1.8rem;
+}
+
+.footer .top .links-left * {
+    flex-shrink: 0;
 }
 
 .footer .top .links-left li:not(:last-of-type)::after {
@@ -59,17 +68,31 @@
 }
 
 .footer .bottom {
-    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 8px;
     line-height: 2.4rem;
     color: var(--mild-gray);
+    font-size: 1rem;
 }
 
 .footer .bottom * {
+    flex-shrink: 0;
     color: inherit;
 }
 
 .footer .bottom .company-name {
     font-weight: 700;
+}
+
+.footer .bottom address * {
+    display: inline;
+}
+
+.footer .bottom *:not(:last-child)::after {
+    content: "|";
+    margin: 0 8px;
+    font-weight: 400;
 }
 
 @media screen and (max-width: 1280px) {
