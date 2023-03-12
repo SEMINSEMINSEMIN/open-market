@@ -34,7 +34,10 @@ export default class ProductList {
 
         const $price = document.createElement("p");
         $price.setAttribute("class", "price");
-        $price.textContent = `${item.price.toLocaleString()}원`;
+        const $span = document.createElement("span");
+        $span.textContent = item.price.toLocaleString();
+        $price.appendChild($span);
+        $price.insertAdjacentText("beforeend", "원");
         $a.appendChild($price);
 
         $li.appendChild($a);

@@ -87,3 +87,14 @@ input::placeholder {
 	margin: -1px;
 	overflow: hidden;
 }
+
+.main {
+	padding: 0 calc(320 / 1920 * 100%) 0 calc(320 / 1920 * 100%);
+}
+
+@media screen and (max-width: 1280px) {
+    .main {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
