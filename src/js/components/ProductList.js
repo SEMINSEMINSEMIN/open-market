@@ -1,5 +1,6 @@
 import { $ } from "../utils/querySelector.js";
 import useHttp from "../utils/useHttp.js";
+import "../../css/components/productList.css";
 
 export default class ProductList {
     constructor($main) {
@@ -16,6 +17,8 @@ export default class ProductList {
         $a.setAttribute("href", `/item/${item.product_id}`);
         
         const $img = document.createElement("img");
+        $img.setAttribute("width", "380");
+        $img.setAttribute("height", "380");
         $img.setAttribute("src", item.image);
         $img.setAttribute("alt", `${item.product_name}`);
         $a.appendChild($img);

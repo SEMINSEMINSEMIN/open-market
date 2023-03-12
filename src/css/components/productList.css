@@ -1,0 +1,3 @@
+.main .product-list .product a img {
+    object-fit: cover;
+}
