@@ -3,8 +3,8 @@ import useHttp from "../utils/useHttp.js";
 import "../../css/components/productList.css";
 
 export default class ProductList {
-    constructor($main) {
-        if (!$main) {
+    constructor($productList) {
+        if (!$productList) {
             this.render();
         }
     }
