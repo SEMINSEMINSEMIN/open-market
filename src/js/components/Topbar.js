@@ -57,7 +57,9 @@ export default class Topbar {
             `);
         }
 
-        $("#app").appendChild($header);
+        const $app = $("#app");
+        const $signUpForm = $(".sign-up-form", $app);
+        $signUpForm ? $app.replaceChild($header, $app.firstElementChild) : $app.appendChild($header);
 
         this.mounted();
     }
