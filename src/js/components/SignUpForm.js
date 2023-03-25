@@ -42,7 +42,7 @@ export default class SignUpForm {
                 <input class="formItem name" type="text" required>
                 <p class="msg"></p>
             </label>
-            <label>
+            <label class="phone-label">
                 <p>휴대폰번호</p>
                 <span class="first">010</span>
                 <input class="formItem second phone" type="text" pattern="[0-9]{3,4}" minlength="3" maxlength="4" required>
@@ -100,25 +100,26 @@ export default class SignUpForm {
 
     handleSellerClicked(insertPosition) {
         const sellerHTML = `
-            <label>
+            <label class="seller-num-label">
                 <p>사업자 등록번호</p>
                 <input class="formItem seller-num" type="text" pattern="[0-9]{10}" maxlength="10">
                 <button type="button">인증</button>
                 <p class="msg"></p>
             </label>
-            <label>
+            <label class="store-name-label">
                 <p>스토어 이름</p>
                 <input class="formItem store-name" type="text">
                 <p class="msg"></p>
             </label>
         `;
-        const isOkayInsert = insertPosition.previousElementSibling.classList.contains("phone");
+        const isOkayInsert = insertPosition.previousElementSibling.classList.contains("phone-label");
         isOkayInsert && insertPosition.insertAdjacentHTML("beforebegin", sellerHTML);
     }
 
     handleBuyerClicked(basis) {
-        const $sellerNum = $(".seller-num", basis);
-        const $storeName = $(".store-name", basis);
+        console.log("buyer");
+        const $sellerNum = $(".seller-num-label", basis);
+        const $storeName = $(".store-name-label", basis);
 
         if ($sellerNum && $storeName) {
             $sellerNum.remove();
