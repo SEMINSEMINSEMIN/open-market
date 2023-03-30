@@ -5,8 +5,10 @@ export default class SignUpForm {
     isIdValid;
     isPwValid;
     isPwSame;
+    isNameValid;
     isPhone2Valid;
     isPhone3Valid;
+    isAgreeChecked;
 
     constructor($main, $form) {
         this.$main = $main;
@@ -14,6 +16,7 @@ export default class SignUpForm {
             "pw": this.pwCheck,
             "pwCheck": this.pwSameCheck,
             "id": this.idCheck,
+            "name": this.nameCheck,
             "phone": this.phoneCheck
         };
         !$form && this.render($main);
@@ -24,29 +27,29 @@ export default class SignUpForm {
         const buyerHTML = `
             <label>
                 <p>아이디</p>
-                <input class="formItem id" type="text" pattern="[a-zA-Z0-9]{0,20}" maxlength="20" required>
+                <input class="formItem focus-out id" type="text" pattern="[a-zA-Z0-9]{0,20}" maxlength="20" required>
                 <p class="msg"></p>
             </label>
             <label>
                 <p>비밀번호</p>
-                <input class="formItem pw" type="password" pattern=${pwPattern} minlength="8" required>
+                <input class="formItem focus-out pw" type="password" pattern=${pwPattern} minlength="8" required>
                 <p class="msg"></p>
             </label>
             <label>
                 <p>비밀번호 재확인</p>
-                <input class="formItem pwCheck" type="password" pattern=${pwPattern} minlength="8" required>
+                <input class="formItem focus-out pwCheck" type="password" pattern=${pwPattern} minlength="8" required>
                 <p class="msg"></p>
             </label>
             <label>
                 <p>이름</p>
-                <input class="formItem name" type="text" required>
+                <input class="formItem focus-out name" type="text" required>
                 <p class="msg"></p>
             </label>
             <label class="phone-label">
                 <p>휴대폰번호</p>
                 <span class="first">010</span>
-                <input class="formItem second phone" type="text" pattern="[0-9]{3,4}" minlength="3" maxlength="4" required>
-                <input class="formItem third phone" type="text" pattern="[0-9]{4}" maxlength="4" required>
+                <input class="formItem focus-out second phone" type="text" pattern="[0-9]{3,4}" minlength="3" maxlength="4" required>
+                <input class="formItem focus-out third phone" type="text" pattern="[0-9]{4}" maxlength="4" required>
                 <p class="msg"></p>
             </label>
         `;
@@ -58,11 +61,11 @@ export default class SignUpForm {
             <form id="signUp">
                 ${buyerHTML}
                 <label class="agreement">
-                    <input type="button">
+                    <input class="formItem" type="button">
                     <p>호두샵의 이용약관 및 개인정보처리방침에 대한 내용을 확인하였고 동의합니다.</p>
                 </label>                
             </form>
-            <button type="button" class="sign-up-btn" form="signUp">가입하기</button>
+            <button type="submit" class="sign-up-btn" form="signUp">가입하기</button>
         `;
 
         if (!$main) {
@@ -83,7 +86,10 @@ export default class SignUpForm {
         const $buyer = $tab.firstElementChild;
         const $seller = $tab.lastElementChild;
         const $signUpForm = $tab.nextElementSibling;
+        const $formItems = $signUpForm.querySelectorAll(".formItem");
         const $agreement = $signUpForm.lastElementChild;
+        const $agreeBtn = $("input", $agreement);
+        const $signUpBtn = $signUpForm.nextElementSibling;
 
         $buyer.addEventListener("click", () => {
             this.handleBuyerClicked($signUpForm);
@@ -95,6 +101,14 @@ export default class SignUpForm {
 
         $signUpForm.addEventListener("focusout", (e) => {
             this.handleInpFocusOut(e.target);
+        });
+
+        $agreeBtn.addEventListener("click", (e) => {
+            this.handleAgreeClicked(e.target);
+        });
+
+        $signUpBtn.addEventListener("click", (e) => {
+            this.handleSignUpClick(e, $formItems);
         });
     }
 
@@ -128,7 +142,7 @@ export default class SignUpForm {
     }
 
     handleInpFocusOut(target) {
-        if (!target.classList.contains("formItem")) {
+        if (!target.classList.contains("focus-out")) {
             return;
         }
 
@@ -136,14 +150,16 @@ export default class SignUpForm {
         const type = classList[classList.length - 1];
         const $msg = parentElement.lastElementChild;
 
-        if (validity.valueMissing) {
-            $msg.textContent = "필수 정보입니다.";
-        } else {
-            const callback = this.validityFuncLookUp[type];
-            if (callback) {
-                this.handleValidityCheck(callback, $msg, {validity, classList, target, parentElement});
-            } else $msg.textContent = "";
-        }
+        const callback = this.validityFuncLookUp[type];
+
+        if (callback) {
+            if (validity.valueMissing) {
+                $msg.textContent = "필수 정보입니다.";
+                return;
+            }
+
+            this.handleValidityCheck(callback, $msg, {validity, classList, target, parentElement});
+        } 
     }
 
     handleValidityCheck(callback, $msg, targetInfo) {
@@ -152,7 +168,8 @@ export default class SignUpForm {
     }
 
     pwCheck($msg, targetInfo) {
-        const {target} = targetInfo;
+        const {target, parentElement} = targetInfo;
+
         const isValid = /^(?=.*[a-z])(?=.*\d).{8,}$/.test(target.value);
         if (isValid) {
             $msg.textContent = "";
@@ -161,24 +178,38 @@ export default class SignUpForm {
             $msg.textContent = "비밀번호는 8자 이상이어야 하며, 영소문자와 숫자가 각각 한 개 이상 필수적으로 들어가야 합니다.";
             this.isPwValid = false;
         }
+        
+        const $pwCheck = $(".pwCheck", parentElement.nextElementSibling);
+        this.pwSameCheck($pwCheck.nextElementSibling, null, {"$pw": target, "target": $pwCheck});
     }
 
-    pwSameCheck($msg, targetInfo) {
-        const {target, parentElement} = targetInfo;
-        const $prevInput = $(".pw", parentElement.previousElementSibling);
-        if ($prevInput.value === target.value) {
-            $msg.textContent = "";
-            this.isPwSame = true;
+    pwSameCheck($msg, targetInfo, extraConfig) {
+        let target, $pw;
+
+        const helper = ($pw, $pwCheck) => {
+            if ($pw.value === $pwCheck.value) {
+                $msg.textContent = "";
+                this.isPwSame = true;
+            } else {
+                if (this.isPwSame !== undefined) $msg.textContent = "비밀번호가 일치하지 않습니다.";
+                this.isPwSame = false;
+            }   
+        };
+
+        if (targetInfo) {
+            target = targetInfo.target;
+            $pw = $(".pw", targetInfo.parentElement.previousElementSibling);
         } else {
-            $msg.textContent = "비밀번호가 일치하지 않습니다.";
-            this.isPwSame = false;
+            target = extraConfig.target;
+            $pw = extraConfig.$pw;
         }
+
+        helper($pw, target);
     }
 
     idCheck($msg, targetInfo) {
         const {validity, target} = targetInfo;
         if (!validity.valid) {
-            $msg.focus();
             $msg.textContent = "20자 이내의 영문 소문자, 대문자, 숫자만 사용 가능합니다.";
             this.isIdValid = false;
         } else {
@@ -186,11 +217,18 @@ export default class SignUpForm {
         }
     }
 
+    nameCheck($msg) {
+        $msg.textContent = "";
+        this.isNameValid = true;
+    }
+
     phoneCheck($msg, targetInfo) {
         const {classList, validity} = targetInfo;
-        if (classList.contains("second")) {
+        const isSecond = classList.contains("second");
+
+        if (isSecond) {
             this.isPhone2Valid = validity.valid;
-        } else if (classList.contains("third")) {
+        } else {
             this.isPhone3Valid = validity.valid;
         }
         $msg.textContent = validity.valid && this.isPhone2Valid === true && this.isPhone3Valid === true 
@@ -209,5 +247,38 @@ export default class SignUpForm {
             changeTarget.textContent = data["FAIL_Message"] || data["Success"];
             this.isIdValid = resStatus !== 400;
         });
+    }
+
+    handleAgreeClicked(target) {
+        this.isAgreeChecked = !target.classList.contains("agree");
+        target.classList.toggle("agree");
+    }
+
+    checkBeforeSignUp(condition, target) {
+        if (target.validity.valueMissing || !condition) {
+            console.log(target);
+            target.focus();
+            throw new Error("invalid");
+        }
+    }
+
+    handleSignUpClick(e, $formItems) {
+        e.preventDefault();
+        console.log("가입하기");
+        const [$id, $pw, $pwCheck, $name, $phone2, $phone3] = $formItems;
+        const $agreement = $formItems[$formItems.length - 1];
+
+        try {
+            this.checkBeforeSignUp(this.isIdValid, $id);
+            this.checkBeforeSignUp(this.isPwValid, $pw);
+            this.checkBeforeSignUp(this.isPwSame, $pwCheck);
+            this.checkBeforeSignUp(this.isNameValid, $name);
+            this.checkBeforeSignUp(!$phone2.validity.patternMismatch, $phone2);
+            this.checkBeforeSignUp(!$phone3.validity.patternMismatch, $phone3);
+            this.checkBeforeSignUp(this.isAgreeChecked, $agreement);
+            console.log("회원가입 가능");
+        } catch (e) {
+            return;
+        }
     }
 }
