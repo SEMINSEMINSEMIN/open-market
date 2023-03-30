@@ -262,11 +262,23 @@ export default class SignUpForm {
         }
     }
 
-    handleSignUpClick(e, $formItems) {
+    handleInValidAfterReq(target, errMsg) {
+        const $msg = target.parentElement.lastElementChild;
+        $msg.textContent = errMsg;
+        target.focus();
+    }
+
+    async handleSignUpClick(e, $formItems) {
         e.preventDefault();
         console.log("가입하기");
         const [$id, $pw, $pwCheck, $name, $phone2, $phone3] = $formItems;
         const $agreement = $formItems[$formItems.length - 1];
+        const elLookUp = {
+            "username": $id,
+            "password": [$pw, $pwCheck],
+            "name": $name,
+            "phone_number": $phone2,
+        };
 
         try {
             this.checkBeforeSignUp(this.isIdValid, $id);
@@ -280,5 +292,36 @@ export default class SignUpForm {
         } catch (e) {
             return;
         }
+
+        const body = {
+            "username": $id.value,
+            "password": $pw.value,
+            "password2": $pwCheck.value,
+            "phone_number": `010${$phone2.value}${$phone3.value}`,
+            "name": $name.value
+        };
+
+        const reqConfig = {
+            method: "POST",
+            url: "/accounts/signup/",
+            body
+        };
+
+        await useHttp(reqConfig, (data, status) => {
+            if (status === 400) {
+                const toEntries = Object.entries(data);
+                const elKey = toEntries[0][0];
+                const errMsg = toEntries[0][1][0];
+                let targetEl = elLookUp[elKey];
+
+                if (elKey === "password") {
+                    targetEl = errMsg === "비밀번호가 일치하지 않습니다." ? elLookUp[elKey][1] : elLookUp[elKey][0];
+                }
+
+                this.handleInValidAfterReq(targetEl, errMsg);
+            } else {
+                console.log("회원가입 완료");
+            }
+        });
     }
 }
