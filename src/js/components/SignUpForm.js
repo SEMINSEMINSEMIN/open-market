@@ -72,7 +72,7 @@ export default class SignUpForm {
                     ${this.formBaseHTML}
                 </div>
                 <label class="agreement">
-                    <input class="formItem" type="button">
+                    <input class="formItem" type="checkbox">
                     <p>호두샵의 이용약관 및 개인정보처리방침에 대한 내용을 확인하였고 동의합니다.</p>
                 </label>                
             </form>
