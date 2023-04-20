@@ -2,16 +2,17 @@ import { $ } from "../utils/querySelector.js";
 import useHttp from "../utils/useHttp.js";
 
 export default class SignUpForm {
-    isIdValid;
-    isPwValid;
-    isPwSame;
-    isNameValid;
-    isPhone2Valid;
-    isPhone3Valid;
-    isAgreeChecked;
-
     constructor($main, $form) {
         this.$main = $main;
+        this.isValid = {
+            "id": null,
+            "pw": null,
+            "pwSame": null,
+            "name": null,
+            "phone2": null,
+            "phone3": null,
+            "agreement": null
+        };
         this.validityFuncLookUp = {
             "pw": this.pwCheck,
             "pwCheck": this.pwSameCheck,
@@ -173,10 +174,10 @@ export default class SignUpForm {
         const isValid = /^(?=.*[a-z])(?=.*\d).{8,}$/.test(target.value);
         if (isValid) {
             $msg.textContent = "";
-            this.isPwValid = true;
+            this.isValid["pw"] = true;
         } else {
             $msg.textContent = "비밀번호는 8자 이상이어야 하며, 영소문자와 숫자가 각각 한 개 이상 필수적으로 들어가야 합니다.";
-            this.isPwValid = false;
+            this.isValid["pw"] = false;
         }
         
         const $pwCheck = $(".pwCheck", parentElement.nextElementSibling);
@@ -189,10 +190,10 @@ export default class SignUpForm {
         const helper = ($pw, $pwCheck) => {
             if ($pw.value === $pwCheck.value) {
                 $msg.textContent = "";
-                this.isPwSame = true;
+                this.isValid["pwSame"] = true;
             } else {
-                if (this.isPwSame !== undefined) $msg.textContent = "비밀번호가 일치하지 않습니다.";
-                this.isPwSame = false;
+                if (this.isValid["pwSame"] !== null) $msg.textContent = "비밀번호가 일치하지 않습니다.";
+                this.isValid["pwSame"] = false;
             }   
         };
 
@@ -211,7 +212,7 @@ export default class SignUpForm {
         const {validity, target} = targetInfo;
         if (!validity.valid) {
             $msg.textContent = "20자 이내의 영문 소문자, 대문자, 숫자만 사용 가능합니다.";
-            this.isIdValid = false;
+            this.isValid["id"] = false;
         } else {
             this.idUniqCheck(target, $msg);
         }
@@ -219,7 +220,7 @@ export default class SignUpForm {
 
     nameCheck($msg) {
         $msg.textContent = "";
-        this.isNameValid = true;
+        this.isValid["name"] = true;
     }
 
     phoneCheck($msg, targetInfo) {
@@ -227,11 +228,11 @@ export default class SignUpForm {
         const isSecond = classList.contains("second");
 
         if (isSecond) {
-            this.isPhone2Valid = validity.valid;
+            this.isValid["phone2"] = validity.valid;
         } else {
-            this.isPhone3Valid = validity.valid;
+            this.isValid["phone3"] = validity.valid;
         }
-        $msg.textContent = validity.valid && this.isPhone2Valid === true && this.isPhone3Valid === true 
+        $msg.textContent = validity.valid && this.isValid["phone2"] === true && this.isValid["phone3"] === true 
             ? "" 
             : "핸드폰번호는 010으로 시작하는 10~11자리 숫자여야 합니다.";
     }
@@ -245,12 +246,12 @@ export default class SignUpForm {
 
         await useHttp(reqConfig, (data, resStatus) => {
             changeTarget.textContent = data["FAIL_Message"] || data["Success"];
-            this.isIdValid = resStatus !== 400;
+            this.isValid["id"] = resStatus !== 400;
         });
     }
 
     handleAgreeClicked(target) {
-        this.isAgreeChecked = !target.classList.contains("agree");
+        this.isValid["agreement"] = !target.classList.contains("agree");
         target.classList.toggle("agree");
     }
 
@@ -281,13 +282,13 @@ export default class SignUpForm {
         };
 
         try {
-            this.checkBeforeSignUp(this.isIdValid, $id);
-            this.checkBeforeSignUp(this.isPwValid, $pw);
-            this.checkBeforeSignUp(this.isPwSame, $pwCheck);
-            this.checkBeforeSignUp(this.isNameValid, $name);
+            this.checkBeforeSignUp(this.isValid["id"], $id);
+            this.checkBeforeSignUp(this.isValid["pw"], $pw);
+            this.checkBeforeSignUp(this.isValid["pwSame"], $pw);
+            this.checkBeforeSignUp(this.isValid["name"], $name);
             this.checkBeforeSignUp(!$phone2.validity.patternMismatch, $phone2);
             this.checkBeforeSignUp(!$phone3.validity.patternMismatch, $phone3);
-            this.checkBeforeSignUp(this.isAgreeChecked, $agreement);
+            this.checkBeforeSignUp(this.isValid["agreement"], $agreement);
             console.log("회원가입 가능");
         } catch (e) {
             return;
@@ -309,6 +310,7 @@ export default class SignUpForm {
 
         await useHttp(reqConfig, (data, status) => {
             if (status === 400) {
+                console.log("회원가입 오류");
                 const toEntries = Object.entries(data);
                 const elKey = toEntries[0][0];
                 const errMsg = toEntries[0][1][0];
