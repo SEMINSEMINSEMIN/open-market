@@ -28,12 +28,12 @@ export default class SignUpForm {
             </label>
             <label>
                 <p>비밀번호</p>
-                <input class="formItem focus-out pw" type="password" pattern="^(?=.*[a-z])(?=.*\d).{8,}$" minlength="8" required>
+                <input class="formItem focus-out pw" type="password" pattern="^(?=.*[a-z])(?=.*\d).{8,}$" minlength="8" autocomplete="new-password" required>
                 <p class="msg"></p>
             </label>
             <label>
                 <p>비밀번호 재확인</p>
-                <input class="formItem focus-out pwCheck" type="password" pattern="^(?=.*[a-z])(?=.*\d).{8,}$" minlength="8" required>
+                <input class="formItem focus-out pwCheck" type="password" pattern="^(?=.*[a-z])(?=.*\d).{8,}$" minlength="8" autocomplete="new-password" required>
                 <p class="msg"></p>
             </label>
             <label>
