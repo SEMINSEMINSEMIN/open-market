@@ -20,12 +20,7 @@ export default class SignUpForm {
             "name": this.nameCheck,
             "phone": this.phoneCheck
         };
-        !$form && this.render($main);
-    }
-
-    render($main) {
-        const pwPattern = "^(?=.*[a-z])(?=.*\d).{8,}$";
-        const buyerHTML = `
+        this.formBaseHTML = `
             <label>
                 <p>아이디</p>
                 <input class="formItem focus-out id" type="text" pattern="[a-zA-Z0-9]{0,20}" maxlength="20" required>
@@ -33,12 +28,12 @@ export default class SignUpForm {
             </label>
             <label>
                 <p>비밀번호</p>
-                <input class="formItem focus-out pw" type="password" pattern=${pwPattern} minlength="8" required>
+                <input class="formItem focus-out pw" type="password" pattern="^(?=.*[a-z])(?=.*\d).{8,}$" minlength="8" required>
                 <p class="msg"></p>
             </label>
             <label>
                 <p>비밀번호 재확인</p>
-                <input class="formItem focus-out pwCheck" type="password" pattern=${pwPattern} minlength="8" required>
+                <input class="formItem focus-out pwCheck" type="password" pattern="^(?=.*[a-z])(?=.*\d).{8,}$" minlength="8" required>
                 <p class="msg"></p>
             </label>
             <label>
@@ -54,13 +49,28 @@ export default class SignUpForm {
                 <p class="msg"></p>
             </label>
         `;
-        const baseHTML = `
+        this.formSellerHTML = `
+            <label class="seller-num-label">
+                <p>사업자 등록번호</p>
+                <input class="formItem seller-num" type="text" pattern="[0-9]{10}" maxlength="10">
+                <button type="button">인증</button>
+                <p class="msg"></p>
+            </label>
+            <label class="store-name-label">
+                <p>스토어 이름</p>
+                <input class="formItem store-name" type="text">
+                <p class="msg"></p>
+            </label>
+        `;
+        this.baseHTML = `
             <div class="tab">
                 <button class="buyer">구매회원가입</button>
                 <button class="seller">판매회원가입</button>
             </div>
             <form id="signUp">
-                ${buyerHTML}
+                <div class="form-inps">
+                    ${this.formBaseHTML}
+                </div>
                 <label class="agreement">
                     <input class="formItem" type="button">
                     <p>호두샵의 이용약관 및 개인정보처리방침에 대한 내용을 확인하였고 동의합니다.</p>
@@ -68,15 +78,18 @@ export default class SignUpForm {
             </form>
             <button type="submit" class="sign-up-btn" form="signUp">가입하기</button>
         `;
+        !$form && this.render($main);
+    }
 
+    render($main) {
         if (!$main) {
             const $newMain = document.createElement("main");
             $newMain.setAttribute("class", "main");
-            $newMain.innerHTML = baseHTML;
+            $newMain.innerHTML = this.baseHTML;
             this.$main = $newMain;
             $("#app").appendChild($newMain);
         } else {
-            $main.innerHTML = baseHTML;
+            $main.innerHTML = this.baseHTML;
         }
 
         this.bindEvents();
@@ -87,17 +100,22 @@ export default class SignUpForm {
         const $buyer = $tab.firstElementChild;
         const $seller = $tab.lastElementChild;
         const $signUpForm = $tab.nextElementSibling;
+        const $formInps = $(".form-inps", $signUpForm);
         const $formItems = $signUpForm.querySelectorAll(".formItem");
         const $agreement = $signUpForm.lastElementChild;
         const $agreeBtn = $("input", $agreement);
         const $signUpBtn = $signUpForm.nextElementSibling;
 
+        $tab.addEventListener("click", () => {
+            this.handleTabClicked();
+        });
+
         $buyer.addEventListener("click", () => {
-            this.handleBuyerClicked($signUpForm);
+            this.handleBuyerClicked($formInps);
         });
 
         $seller.addEventListener("click", () => {
-            this.handleSellerClicked($agreement);
+            this.handleSellerClicked($formInps);
         });
 
         $signUpForm.addEventListener("focusout", (e) => {
@@ -113,33 +131,18 @@ export default class SignUpForm {
         });
     }
 
-    handleSellerClicked(insertPosition) {
-        const sellerHTML = `
-            <label class="seller-num-label">
-                <p>사업자 등록번호</p>
-                <input class="formItem seller-num" type="text" pattern="[0-9]{10}" maxlength="10">
-                <button type="button">인증</button>
-                <p class="msg"></p>
-            </label>
-            <label class="store-name-label">
-                <p>스토어 이름</p>
-                <input class="formItem store-name" type="text">
-                <p class="msg"></p>
-            </label>
-        `;
-        const isOkayInsert = insertPosition.previousElementSibling.classList.contains("phone-label");
-        isOkayInsert && insertPosition.insertAdjacentHTML("beforebegin", sellerHTML);
+    handleTabClicked() {
+        for (const key in this.isValid) {
+            this.isValid[key] = null;
+        }
     }
 
-    handleBuyerClicked(basis) {
-        console.log("buyer");
-        const $sellerNum = $(".seller-num-label", basis);
-        const $storeName = $(".store-name-label", basis);
+    handleSellerClicked(insertPosition) {
+        insertPosition.innerHTML = this.formBaseHTML + this.formSellerHTML;
+    }
 
-        if ($sellerNum && $storeName) {
-            $sellerNum.remove();
-            $storeName.remove();
-        }
+    handleBuyerClicked(insertPosition) {
+        insertPosition.innerHTML = this.formBaseHTML;
     }
 
     handleInpFocusOut(target) {
