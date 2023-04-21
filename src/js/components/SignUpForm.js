@@ -11,14 +11,18 @@ export default class SignUpForm {
             "name": null,
             "phone2": null,
             "phone3": null,
-            "agreement": null
+            "agreement": null,
+            "coNum": null,
+            "coName": null
         };
         this.validityFuncLookUp = {
             "pw": this.pwCheck,
             "pwCheck": this.pwSameCheck,
             "id": this.idCheck,
             "name": this.nameCheck,
-            "phone": this.phoneCheck
+            "phone": this.phoneCheck,
+            "coNum": this.coNumCheck,
+            "coName": this.coNameCheck
         };
         this.formBaseHTML = `
             <label>
@@ -52,13 +56,12 @@ export default class SignUpForm {
         this.formSellerHTML = `
             <label class="seller-num-label">
                 <p>사업자 등록번호</p>
-                <input class="formItem seller-num" type="text" pattern="[0-9]{10}" maxlength="10">
-                <button type="button">인증</button>
+                <input class="formItem focus-out coNum" type="text" pattern="[0-9]{10}" maxlength="10">
                 <p class="msg"></p>
             </label>
             <label class="store-name-label">
                 <p>스토어 이름</p>
-                <input class="formItem store-name" type="text">
+                <input class="formItem focus-out coName" type="text">
                 <p class="msg"></p>
             </label>
         `;
@@ -150,14 +153,14 @@ export default class SignUpForm {
             return;
         }
 
-        const {validity, classList, parentElement} = target;
+        const {value, validity, classList, parentElement} = target;
         const type = classList[classList.length - 1];
         const $msg = parentElement.lastElementChild;
 
         const callback = this.validityFuncLookUp[type];
 
         if (callback) {
-            if (validity.valueMissing) {
+            if (!value.length) {
                 $msg.textContent = "필수 정보입니다.";
                 return;
             }
@@ -251,6 +254,40 @@ export default class SignUpForm {
             changeTarget.textContent = data["FAIL_Message"] || data["Success"];
             this.isValid["id"] = resStatus !== 400;
         });
+    }
+
+    coNumCheck($msg, targetInfo) {
+        const {validity, target} = targetInfo;
+        if (!validity.valid) {
+            $msg.textContent = "사업자 등록번호는 10자리 숫자여야 합니다.";
+            this.isValid["coNum"] = false;
+        } else {
+            this.coNumUniqCheck(target, $msg);
+        }
+    }
+
+    async coNumUniqCheck(target, changeTarget) {
+        const reqConfig = {
+            method: "POST",
+            url: "/accounts/signup/valid/company_registration_number/",
+            body: {"company_registration_number": target.value}
+        };
+
+        await useHttp(reqConfig, (data, resStatus) => {
+            changeTarget.textContent = data["FAIL_Message"] || data["Success"];
+            this.isValid["coNum"] = resStatus !== 400;
+        });
+    }
+
+    coNameCheck($msg, targetInfo) {
+        const {target} = targetInfo;
+        if (target.value.trim().length) {
+            $msg.textContent = "";
+            this.isValid["coName"] = true;
+        } else {
+            $msg.textContent = "공백만 입력해서는 안 됩니다.";
+            this.isValid["coNum"] = false;
+        }
     }
 
     handleAgreeClicked(target) {
