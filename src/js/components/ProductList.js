@@ -60,13 +60,21 @@ export default class ProductList {
     }
 
     async render() {
-        const $main = document.createElement("main");
-        $main.setAttribute("class", "main");
         const $productList = document.createElement("ul");
         $productList.setAttribute("class", "product-list");
         this.$productList = $productList;
-        $main.appendChild($productList);
-        $("#app").appendChild($main);
+
+        const $app = $("#app");
+        const $main = $(".main", $app);
+
+        if ($main) {
+            $main.replaceChildren($productList);
+        } else {
+            const $newMain = document.createElement("main");
+            $newMain.setAttribute("class", "main");
+            $newMain.appendChild($productList);
+            $app.appendChild($newMain);
+        }
         
         await this.renderItems();
 
